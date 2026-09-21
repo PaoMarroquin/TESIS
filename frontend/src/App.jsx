@@ -14,7 +14,7 @@ function App() {
 
       <div style={{ padding: "20px" }}>
 
-        <h1>Sistema de Evaluación Lectora</h1>
+        <h1>Sistema Borrador inicial</h1>
 
         <nav>
 

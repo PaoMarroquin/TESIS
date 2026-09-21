@@ -1,13 +1,13 @@
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile,HTTPException, File, Form
 from fastapi.middleware.cors import CORSMiddleware
-
 import pandas as pd
 import os
 import shutil
 import re
 
 from sqlalchemy import text
-from connection import engine
+from backend.app.db.session import engine
+
 
 app = FastAPI()
 
@@ -230,7 +230,7 @@ async def upload_students(
 
         raise HTTPException(
             status_code=400,
-            detail="El archivo Excel no es válido"
+            detail="Excel inválido"
         )
 
     registros_insertados = 0
@@ -239,53 +239,22 @@ async def upload_students(
 
         for _, row in df.iterrows():
 
-            valores = [
-                str(v).strip()
-                for v in row.tolist()
-                if pd.notna(v)
-            ]
-
-            if len(valores) == 0:
-                continue
-
-            texto = " ".join(valores)
-
-            texto = re.sub(
-                r'^\d+\s*',
-                '',
-                texto
+            codigo = str(
+                row.get("CODIGO", "")
             ).strip()
 
-            nombres = ""
-            apellidos = ""
+            nombres = str(
+                row.get("NOMBRES", "")
+            ).strip()
 
-            if "," in texto:
+            apellidos = str(
+                row.get("APELLIDOS", "")
+            ).strip()
 
-                partes = texto.split(",")
+            if nombres == "":
+                continue
 
-                apellidos = partes[0].strip()
-
-                nombres = partes[1].strip()
-
-            else:
-
-                partes = texto.split()
-
-                if len(partes) >= 4:
-
-                    apellidos = " ".join(partes[:2])
-
-                    nombres = " ".join(partes[2:])
-
-                elif len(partes) >= 2:
-
-                    apellidos = partes[0]
-
-                    nombres = " ".join(partes[1:])
-
-                else:
-
-                    nombres = texto
+            apellidos = apellidos.replace(",", "")
 
             existe = conn.execute(
                 text("""
@@ -311,6 +280,7 @@ async def upload_students(
                 text("""
                     INSERT INTO estudiantes
                     (
+                        codigo,
                         nombres,
                         apellidos,
                         grado,
@@ -318,6 +288,7 @@ async def upload_students(
                     )
                     VALUES
                     (
+                        :codigo,
                         :nombres,
                         :apellidos,
                         :grado,
@@ -325,6 +296,7 @@ async def upload_students(
                     )
                 """),
                 {
+                    "codigo": codigo,
                     "nombres": nombres,
                     "apellidos": apellidos,
                     "grado": grado,

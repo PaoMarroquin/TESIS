@@ -1,0 +1,23 @@
+# --- Framework y servidor ---
+fastapi
+uvicorn[standard]
+python-multipart
+
+# --- Base de datos ---
+sqlalchemy>=2.0
+alembic
+psycopg[binary]
+pgvector
+
+# --- Configuración / variables de entorno ---
+pydantic-settings
+
+# --- Carga y procesamiento de Excel (RF05) ---
+pandas
+openpyxl
+
+# --- Generación de PDF (RF10) ---
+reportlab
+
+# --- IA / RAG (RF08) ---
+google-generativeai
