@@ -1,7 +1,3 @@
-"""
-Seed de catálogos fijos: rol, curso, competencia, capacidad.
-
-"""
 from app.db.session import SessionLocal
 from app.models.curricular import Capacidad, Competencia, Curso
 from app.models.enums import NivelEducativo, RolNombre
@@ -90,7 +86,18 @@ def run():
                     )
 
         db.commit()
+
+        # Resumen de verificación: cuenta lo que quedó realmente en la BD
+        total_roles = db.query(Rol).count()
+        total_cursos = db.query(Curso).count()
+        total_competencias = db.query(Competencia).count()
+        total_capacidades = db.query(Capacidad).count()
+
         print("Seed de catálogos curriculares completado.")
+        print(f"  - roles:        {total_roles} (esperado: 3)")
+        print(f"  - cursos:       {total_cursos} (esperado: 1)")
+        print(f"  - competencias: {total_competencias} (esperado: 3)")
+        print(f"  - capacidades:  {total_capacidades} (esperado: 13)")
     finally:
         db.close()
 

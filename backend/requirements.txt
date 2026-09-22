@@ -21,3 +21,9 @@ reportlab
 
 # --- IA / RAG (RF08) ---
 google-generativeai
+
+# --- Auth (RF01: JWT propio) ---
+passlib[bcrypt]
+bcrypt==4.0.1
+python-jose[cryptography]
+email-validator
