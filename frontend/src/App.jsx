@@ -1,55 +1,25 @@
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Link
-} from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import AulaDetalle from "./pages/AulaDetalle";
+import Layout from "./components/Layout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-import DocumentosCurriculares from "./pages/DocumentosCurriculares";
-import Estudiantes from "./pages/Estudiantes";
-
-function App() {
+export default function App() {
   return (
-    <BrowserRouter>
-
-      <div style={{ padding: "20px" }}>
-
-        <h1>Sistema Borrador inicial</h1>
-
-        <nav>
-
-          <Link to="/">
-            Documentos Curriculares
-          </Link>
-
-          {" | "}
-
-          <Link to="/students">
-            Estudiantes
-          </Link>
-
-        </nav>
-
-        <hr />
-
-        <Routes>
-
-          <Route
-            path="/"
-            element={<DocumentosCurriculares />}
-          />
-
-          <Route
-            path="/students"
-            element={<Estudiantes />}
-          />
-
-        </Routes>
-
-      </div>
-
-    </BrowserRouter>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/aulas/:aulaId" element={<AulaDetalle />} />
+      </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
-
-export default App;
