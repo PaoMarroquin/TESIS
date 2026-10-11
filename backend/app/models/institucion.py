@@ -44,7 +44,8 @@ class Usuario(UUIDPKMixin, TimestampMixin, Base):
     rol_id: Mapped[int] = mapped_column(ForeignKey("rol.id"), nullable=False)
     nombres: Mapped[str] = mapped_column(String(100), nullable=False)
     apellidos: Mapped[str] = mapped_column(String(100), nullable=False)
-    email: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)   
+    dni: Mapped[Optional[str]] = mapped_column(String(8), unique=True, index=True, nullable=True)
+    email: Mapped[Optional[str]] = mapped_column(String(150), unique=True, nullable=True)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     telefono: Mapped[Optional[str]] = mapped_column(String(20))
     estado: Mapped[EstadoGeneral] = mapped_column(Enum(EstadoGeneral, name="enum_estado_general"),default=EstadoGeneral.activo,nullable=False,)
@@ -58,7 +59,6 @@ class Docente(Base):
 
     id: Mapped[PyUUID] = mapped_column(UUID(as_uuid=True), ForeignKey("usuario.id"), primary_key=True)
     especialidad: Mapped[Optional[str]] = mapped_column(String(100))
-    codigo_docente: Mapped[Optional[str]] = mapped_column(String(30))
     usuario: Mapped["Usuario"] = relationship(back_populates="docente")
     aulas: Mapped[list["Aula"]] = relationship(back_populates="docente")
 

@@ -1,30 +1,33 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import text
 
-from app.db.session import engine
+from app.core.bootstrap import asegurar_admin, asegurar_roles
+from app.db.session import SessionLocal
 from app.modulos.auth.router import router as auth_router
+from app.modulos.instituciones.router import router as instituciones_router
+from app.modulos.usuarios.router import router as usuarios_router
 
-app = FastAPI(title="Sistema de Fichas de Evaluación")
 
-# --- CORS ---
-origins = [
-    "http://localhost:5173",
-]
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    with SessionLocal() as db:
+        asegurar_roles(db)
+        asegurar_admin(db)
+    yield
+
+
+app = FastAPI(title="Sistema de Fichas de Evaluación", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# --- Routers de cada módulo (monolito modular) ---
 app.include_router(auth_router)
-
-@app.get("/")
-def home():
-    with engine.connect() as conn:
-        conn.execute(text("SELECT 1"))
-    return {"mensaje": "Conexión exitosa con PostgreSQL"}
+app.include_router(instituciones_router)
+app.include_router(usuarios_router)

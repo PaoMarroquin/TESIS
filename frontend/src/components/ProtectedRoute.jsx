@@ -2,13 +2,13 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function RutaProtegida({ children }) {
-  const { usuario, cargando } = useAuth();
+  const { user, loading } = useAuth();
 
-  if (cargando) {
-    return <p>Cargando...</p>;
+  if (loading) {
+    return <p className="p-6">Cargando...</p>;
   }
 
-  if (!usuario) {
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 
